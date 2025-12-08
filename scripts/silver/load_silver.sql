@@ -63,9 +63,8 @@ SELECT
 		ELSE 'n/a'
 	END AS prd_line, 
 	CAST(prd_start_dt AS DATETIME) AS prd_start_dt,
-	CAST(
-		LEAD(prd_start_dt) OVER (PARTITION BY prd_key ORDER BY prd_start_dt) - 1 
-		AS DATETIME
+	DATE_SUB(
+		LEAD(prd_start_dt) OVER (PARTITION BY prd_key ORDER BY prd_start_dt),INTERVAL 1 DAY
 	) AS prd_end_dt 
 FROM bronze.crm_prd_info;
 

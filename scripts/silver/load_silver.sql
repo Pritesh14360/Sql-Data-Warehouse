@@ -4,14 +4,13 @@ BEGIN
 
 -- Loading silver.crm_cust_info
 
-INSERT INTO silver.crm_cust_info (
+IINSERT INTO silver.crm_cust_info (
     cst_id, 
     cst_key, 
     cst_firstname, 
     cst_lastname, 
     cst_marital_status, 
-    cst_gndr,
-    cst_create_date
+    cst_gndr
 )
 SELECT
 	cst_id,
@@ -25,16 +24,16 @@ SELECT
     CASE WHEN UPPER(cst_gndr)='F' THEN 'Female'
 		WHEN UPPER(cst_gndr)='M' THEN 'Male'
         ELSE 'NA'
-	END cst_gndr,
-	cst_create_date
+	END cst_gndr
 FROM(
 	SELECT
 		*,
-		ROW_NUMBER() OVER(PARTITION BY cst_id ORDER BY cst_create_date) as flag_last
+		ROW_NUMBER() OVER(PARTITION BY cst_id) as flag_last
 	FROM bronze.crm_cust_info
     WHERE cst_id IS NOT NULL
 )t
 WHERE flag_last =1;
+
 
 
 -- Loading silver.crm_prd_info
@@ -52,7 +51,7 @@ INSERT INTO silver.crm_prd_info (
 SELECT
 	prd_id,
 	REPLACE(SUBSTRING(prd_key, 1, 5), '-', '_') AS cat_id, 
-	SUBSTRING(prd_key, 7, length(prd_key)) AS prd_key,        
+	SUBSTRING(prd_key, 7, LENGTH(prd_key)) AS prd_key,        
 	prd_nm,
 	NULLIF(prd_cost, 0) AS prd_cost,
 	CASE 
@@ -86,24 +85,18 @@ SELECT
     sls_ord_num,
     sls_prd_key,
     sls_cust_id,
-    CASE
-        WHEN sls_order_dt IN ('0', '', '00000000') 
-             OR LENGTH(sls_order_dt) != 8
-        THEN NULL
-        ELSE STR_TO_DATE(sls_order_dt, '%Y%m%d')
-    END AS sls_order_dt,
-    CASE
-        WHEN sls_ship_dt IN ('0', '', '00000000')
-             OR LENGTH(sls_ship_dt) != 8
-        THEN NULL
-        ELSE STR_TO_DATE(sls_ship_dt, '%Y%m%d')
-    END AS sls_ship_dt,
-    CASE
-        WHEN sls_due_dt IN ('0', '', '00000000')
-             OR LENGTH(sls_due_dt) != 8
-        THEN NULL
-        ELSE STR_TO_DATE(sls_due_dt, '%Y%m%d')
-    END AS sls_due_dt,
+    CASE 
+		WHEN sls_order_dt = 0 OR CHAR_LENGTH(sls_order_dt) != 8 THEN NULL
+		ELSE CAST(sls_order_dt  AS DATETIME)
+	END AS sls_order_dt,
+	CASE 
+		WHEN sls_ship_dt = 0 OR CHAR_LENGTH(sls_ship_dt) != 8 THEN NULL
+		ELSE CAST(sls_ship_dt  AS DATETIME)
+	END AS sls_ship_dt,
+	CASE 
+		WHEN sls_due_dt = 0 OR CHAR_LENGTH(sls_due_dt) != 8 THEN NULL
+		ELSE CAST(sls_due_dt AS DATETIME)
+	END AS sls_due_dt,
     CASE
         WHEN sls_sales IS NULL 
              OR sls_sales <= 0
@@ -177,6 +170,5 @@ SELECT
 	subcat,
 	maintenance
 FROM bronze.erp_px_cat_g1v2;
-
 END$$
 DELIMITER ;

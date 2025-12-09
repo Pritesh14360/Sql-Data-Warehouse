@@ -59,17 +59,4 @@ CREATE TABLE bronze.erp_px_cat_g1v2 (
     maintenance  VARCHAR(50)
 );
 
-DROP TABLE IF EXISTS etl_log;
-CREATE TABLE etl_log (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    batch_name VARCHAR(100),
-    table_name VARCHAR(100),
-    status VARCHAR(20),
-    rows_loaded INT,
-    message TEXT,
-    start_time DATETIME,
-    end_time DATETIME,
-    duration_seconds INT
-);
-
 

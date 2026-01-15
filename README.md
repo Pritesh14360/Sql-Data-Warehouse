@@ -51,7 +51,7 @@ data-warehouse-project/
 
 - ✔ Data Warehouse Architecture (Bronze → Silver → Gold)
 - ✔ ETL Design in SQL
-- ✔ Cleaning dirty date formats using STR_TO_DATE() + REGEXP
+- ✔ Cleaning dirty date formats using STR_TO_DATE()
 - ✔ Applying window functions like ROW_NUMBER() and LEAD()
 - ✔ Fixing inconsistent product, gender, marital status values
 - ✔ Using MySQL for analytical processing
